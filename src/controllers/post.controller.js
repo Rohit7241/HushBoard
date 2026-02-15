@@ -2,10 +2,9 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 import {ApiError, apiError} from "../utils/ApiError.js"
 import { Post } from "../models/post.model.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
-
 const CreatePost=asyncHandler(async(req,res)=>{
     const {Title,content,posttype}=req.body
-    if(!Title||!content||posttype){
+    if(!Title||!content||!posttype){
         throw new ApiError(404,"Title or content cannot be empty")
     }
     //check with gemini api
@@ -13,9 +12,9 @@ const CreatePost=asyncHandler(async(req,res)=>{
     if(consent=="NO"){
         throw new ApiError(400,"The content you provided doesn't seem fit to post refine your language and words")
     }
-    const expiry=new Date(Date.now()+48*60*60*1000)
+    const expiry=new Date(Date.now()+48*60*60*1000) 
     const post=await Post.create({
-        Title,posttype,content,expiry
+        Title,posttype,content,expiresAt:expiry
     })
     if(!post){
         throw new ApiError(500,"Could not post! Try Again!")
@@ -29,16 +28,36 @@ const liked=asyncHandler(async(req,res)=>{
     if(!id){
         throw new ApiError(400,"Id id requires")
     }
-    const post=Post.findById(id)
+    const post=await Post.findById(id)
     if(!post){
         throw new ApiError(500,"Couldnt find post")
     }
     post.Likes=post.Likes+1
-    post.save({validateBeforeSave:false})
+    await post.save({validateBeforeSave:false})
     return res.status(200).json(
         new ApiResponse(200,"","updated")
     )
 })
+const GetAllPosts=asyncHandler(async(req,res)=>{
+    const posts=await Post.find({}).sort({createdAt:-1});
+    if(!posts){
+        throw new ApiError(500,"Server Error");
+    }
+    return res.status(200).json(
+        new ApiResponse(200,posts,"Fetched All Posts")
+    )
+})
+const GetLikeCount=asyncHandler(async(req,res)=>{
+    const {id}=req.body;
+    const post=await Post.findById(id);
+    const likes=post.Likes();
+    return res.status(200).json(
+        new ApiResponse(200,likes,"Likes Fetched")
+    )
+})
 
 export {CreatePost,
-        liked}
+        liked,
+        GetAllPosts,
+        GetLikeCount
+        }
