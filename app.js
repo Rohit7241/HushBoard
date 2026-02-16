@@ -17,7 +17,9 @@ app.use(express.urlencoded({
 }))
 
 app.use(express.static("public"))
-app.use(cookieParser)
+app.use(cookieParser())
 
 //routes
+import postrouter from "./src/routes/post.routes.js"
+app.use("/api/v1/post",postrouter)
 export {app}

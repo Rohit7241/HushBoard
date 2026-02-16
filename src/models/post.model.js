@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { model, Model, Schema } from "mongoose";
 
 const postSchema=new Schema({
     Title:{
