@@ -11,22 +11,19 @@ const geminiapi=async(title,content)=>{
     model: "gemini-2.5-flash",
     contents: `Just Answer in YES or NO is this title and content ok to post publicily give a straight NO if it cotains bodyshaming or racism or cussword Title:${title} content:${content}`,
   });
-  console.log(response.text);
   return response.text;
 }
 const CreatePost=asyncHandler(async(req,res)=>{
-    console.log("Create post hit")
-    const {Title,content,posttype}=req.body
+    const {Title,content,posttype,expiry_time}=req.body
     if(!Title||!content||!posttype){
         throw new ApiError(404,"Title or content cannot be empty")
     }
     //check with gemini api
     const consent=await geminiapi(Title,content)
-    console.log(consent)
     if(consent=="NO"){
         throw new ApiError(400,"The content you provided doesn't seem fit to post refine your language and words")
     }
-    const expiry=new Date(Date.now()+48*60*60*1000) 
+    const expiry=new Date(Date.now()+expiry_time*60*60*1000) 
     const post=await Post.create({
         Title,posttype,content,expiresAt:expiry
     })
