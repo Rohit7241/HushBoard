@@ -14,9 +14,10 @@ const postSchema=new Schema({
         lowercase:true,
         required:true
     },
-    Likes:{
-        type:Number,
-    },
+    Likes:[{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }],
     expiresAt:{
         type:Date,
         required:true

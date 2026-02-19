@@ -1,11 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
 import { CreatePost, GetAllPosts, GetLikeCount, liked } from "../controllers/post.controller.js";
+import {jwtverify} from "../middlewares/jwt.middleware.js"
 const router=Router();
 const formparser=multer().none();
-router.route("/like").post(liked)
-router.route("/likecount").post(GetLikeCount)
+router.route("/like").post(jwtverify,liked)
+router.route("/likecount").post(jwtverify,GetLikeCount)
 router.route("/AllPosts").get(GetAllPosts)
-router.route("/CreatePost").post(formparser,CreatePost)
+router.route("/CreatePost").post(formparser,jwtverify,CreatePost)
 
 export default router
