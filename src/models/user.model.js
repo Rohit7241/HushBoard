@@ -5,10 +5,11 @@ const userSchema=new Schema({
         type:String,
         required:true
     },
-    posts:[{
-      type:Schema.Types.ObjectId,
-      ref:"Post"
-    }]
+    posts:{
+      type:[{type:Schema.Types.ObjectId,
+      ref:"Post"}],
+      default:[]
+    }
 },{timestamps:true})
 
 export const User=model("User",userSchema)

@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js";
 const geminiapi=async(title,content)=>{
    const ai = new GoogleGenAI({
-    apiKey:"AIzaSyAVvgKim9IZYOCe7nfU1bjkBZH9AHxQ1ac"
+    apiKey:process.env.GEMINI_API
    });
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
@@ -17,6 +17,7 @@ const geminiapi=async(title,content)=>{
 const CreatePost=asyncHandler(async(req,res)=>{
     const {Title,content,posttype,expiry_time}=req.body
     const {userid}=req.user;
+    
     if(!Title||!content||!posttype){
         throw new ApiError(404,"Title or content cannot be empty")
     }
@@ -28,12 +29,16 @@ const CreatePost=asyncHandler(async(req,res)=>{
     if(consent=="NO"){
         throw new ApiError(400,"The content you provided doesn't seem fit to post refine your language and words")
     }
-    const expiry=new Date(Date.now()+expiry_time*60*60*1000)
-    let user=await User.find(userid);
+    let expiry=new Date(Date.now()+expiry_time*60*60*1000)
+    if(!expiry_time){
+        expiry=new Date(Date.now()+48*60*60*1000);
+    }
+    let user=await User.findOne({userid});
     if(!user){
         user=await User.create({userid})
     }
-    if(user.posts.size()>=10){
+    // console.log(user)
+    if(user.posts.length>=10){
         throw new ApiError(400,"You cannot post more than 10 times a Day")
     }
     const post=await Post.create({
@@ -55,7 +60,7 @@ const liked=asyncHandler(async(req,res)=>{
     if(!postid){
         throw new ApiError(400,"Id id requires")
     }
-    let user=await User.find(userid);
+    let user=await User.findOne({userid});
     if(!user){
         user=await User.create({userid})
     }
@@ -79,9 +84,12 @@ const GetAllPosts=asyncHandler(async(req,res)=>{
     )
 })
 const GetLikeCount=asyncHandler(async(req,res)=>{
-    const {id}=req.body;
-    const post=await Post.findById(id);
-    const likes=post.Likes.size();
+    const {postid}=req.body;
+    const post=await Post.findById(postid);
+    if(!post){
+        throw new ApiError(404,"Post not found")
+    }
+    const likes=post.Likes.length;
     return res.status(200).json(
         new ApiResponse(200,likes,"Likes Fetched")
     )
