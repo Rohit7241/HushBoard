@@ -24,7 +24,6 @@ const postSchema=new Schema({
     }
 },
 {timestamps:true})
-
 postSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export const Post=model("Post",postSchema)

@@ -8,5 +8,5 @@ router.route("/like").post(formparser,jwtverify,liked)
 router.route("/likecount").post(formparser,jwtverify,GetLikeCount)
 router.route("/AllPosts").get(GetAllPosts)
 router.route("/CreatePost").post(formparser,jwtverify,CreatePost)
-
+router.route("/register").post(formparser,register)
 export default router
