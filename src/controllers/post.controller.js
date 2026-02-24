@@ -36,8 +36,7 @@ const register=asyncHandler(async(req,res)=>{
          res.cookie("hushToken",newToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: "Strict",
-                maxAge: 24 * 60 * 60 * 1000
+                sameSite: "Strict"
             });
         const user=User.create({userid,email});
         if(!user){
@@ -133,8 +132,19 @@ const recoveraccount=asyncHandler(async(req,res)=>{
     }
     const user=User.findOne({userid});
     if(!user){
-        throw new ApiError(404,"No User Found!!");
+        throw new ApiError(500,"No User Found!!");
     }
+    const email=user.email
+    const newToken = jwt.sign(
+                {userid, 
+                   email},
+                process.env.JWT_SECRET,
+                );
+         res.cookie("hushToken",newToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "Strict"
+            });
 })
 export {CreatePost,
         liked,
