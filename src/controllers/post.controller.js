@@ -150,5 +150,6 @@ export {CreatePost,
         liked,
         GetAllPosts,
         GetLikeCount,
-        register
+        register,
+        recoveraccount
         }
