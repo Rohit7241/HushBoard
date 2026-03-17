@@ -17,7 +17,7 @@ const geminiapi=async(title,content)=>{
   });
   return response.text;
 }
-const register=asyncHandler(async(req,res)=>{
+const registerAccount=asyncHandler(async(req,res)=>{
     const {email}=req.body;
     if(!email){
         throw new ApiError(404,"Email is Required!");
@@ -125,6 +125,7 @@ const GetLikeCount=asyncHandler(async(req,res)=>{
         new ApiResponse(200,likes,"Likes Fetched")
     )
 })
+//a unique 16 digit id will be generated for each user and to recover he need to provide the id
 const recoveraccount=asyncHandler(async(req,res)=>{
     const {userid}=res.body;
     if(!userid){
@@ -150,6 +151,6 @@ export {CreatePost,
         liked,
         GetAllPosts,
         GetLikeCount,
-        register,
+        registerAccount,
         recoveraccount
         }
