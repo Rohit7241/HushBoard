@@ -1,156 +1,113 @@
-import {asyncHandler} from "../utils/asyncHandler.js"
-import {ApiError} from "../utils/ApiError.js"
-import { Post } from "../models/post.model.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
- import { GoogleGenAI } from "@google/genai";
-import { User } from "../models/user.model.js";
-const otpgenerate=(email)=>{
-    
-}
-const geminiapi=async(title,content)=>{
-   const ai = new GoogleGenAI({
-    apiKey:process.env.GEMINI_API
-   });
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: `Just Answer in YES or NO is this title and content ok to post publicily give a straight NO if it cotains bodyshaming or racism or cussword Title:${title} content:${content}`,
-  });
-  return response.text;
-}
-const registerAccount=asyncHandler(async(req,res)=>{
-    const {email}=req.body;
-    if(!email){
-        throw new ApiError(404,"Email is Required!");
-    }
-    const otp=otpgenerate(email)
-    const verified=otpverify(otp,email)
-    if(!verified){
-        throw new ApiError(400,"Otp Not Verified");
-    }
-    const userid=uuidv4();
-        const newToken = jwt.sign(
-                {userid, 
-                   email},
-                process.env.JWT_SECRET,
-                );
-         res.cookie("hushToken",newToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "Strict"
-            });
-        const user=User.create({userid,email});
-        if(!user){
-            throw new ApiError(500,"Internal Server Error!")
-        }
-        return res.status(200).json(
-            new ApiResponse(200,user,"User Registered")
-        )
-})
+import { Post } from "../models/post.model";
+import { Reaction } from "../models/reaction.model";
+import { User } from "../models/user.model";
+import { ApiError } from "../utils/ApiError";
+import { ApiResponse } from "../utils/ApiResponse";
+import { asyncHandler } from "../utils/asyncHandler"
+
+
 const CreatePost=asyncHandler(async(req,res)=>{
-    const {Title,content,posttype,expiry_time}=req.body
-    const {userid}=req.user;
-    if(!Title||!content||!posttype){
-        throw new ApiError(404,"Title or content cannot be empty")
+    let {AnoName,Category,Title,content,expiry}=req.body;
+    const {Author}=req.user._id
+    if(!AnoName){
+        AnoName=username
     }
-    if(!userid){
-        throw new ApiError(500,"Internal Server error please try after some time")
+    const expiresAt=new Date()
+    if(expiry=="1h"){
+        expiresAt.setHours(expiresAt.getHours() + 1);
     }
-    //check with gemini api
-    const consent=await geminiapi(Title,content)
-    if(consent=="NO"){
-        throw new ApiError(400,"The content you provided doesn't seem fit to post refine your language and words")
+    else if(expiry=="12h"){
+        expiresAt.setHours(expiresAt.getHours() + 12);
     }
-    let expiry=new Date(Date.now()+expiry_time*60*60*1000)
-    if(!expiry_time){
-        expiry=new Date(Date.now()+48*60*60*1000);
+    else if(expiry=="24h"){
+        expiresAt.setHours(expiresAt.getHours() + 24);
     }
-    let user=await User.findOne({userid});
-    if(!user){
-        throw new ApiError(404,"User ")
+    else if(expiry=="72h"){
+        expiresAt.setHours(expiresAt.getHours() + 72);
     }
-    // console.log(user)
-    if(user.posts.length>=10){
-        throw new ApiError(400,"You cannot post more than 10 times a Day")
+    else if(expiry=="never"){
+        expiresAt=new Date("2100-01-01")
     }
-    const post=await Post.create({
-        Title,posttype,content,expiresAt:expiry
+    else{
+        expiresAt.setDate(expiresAt.getDate()+1);
+    }
+    const post=await Post({
+        Title,AnoName,Author,Category,content,expiresAt
     })
-    
     if(!post){
-        throw new ApiError(500,"Could not post! Try Again!")
+        throw new ApiError(500,"Error Creating Post")
     }
-    user.posts.push(post._id);
-    await user.save({validateBeforeSave:false})
     return res.status(200).json(
-        new ApiResponse(200,post,"created post")
+        new ApiResponse(200,[],"Post Created")
     )
 })
-const liked=asyncHandler(async(req,res)=>{
-    const {postid}=req.body
-    const {userid}=req.user;
-    if(!postid){
-        throw new ApiError(400,"Id id requires")
+const toggleReaction=asyncHandler(async(req,res)=>{
+    const {type}=req.body
+    const {userid}=req.user._id
+    const {postid}=req.query
+    const existing=await Reaction.findOne({
+        userid,postid,type
+    })
+    if(existing){
+        await Reaction.findByIdAndDelete(existing._id)
     }
-    let user=await User.findOne({userid});
-    if(!user){
-        user=await User.create({userid})
+    else await Reaction.create({
+        userid,postid,type
+    })
+    return res.status(200).json(
+        new ApiResponse(200,[],"Toggled Reaction")
+    )
+})
+const getAllPosts=asyncHandler(async(req,res)=>{
+    const posts=await Post.find()
+    return res.status(200).json(
+        new ApiResponse(200,posts,"Got All posts")
+    )
+})
+
+const getPostById=asyncHandler(async(req,res)=>{
+    const postid=req.query
+    if(!postid){
+        throw new ApiError(400,"Post Id required")
     }
     const post=await Post.findById(postid)
     if(!post){
-        throw new ApiError(500,"Couldnt find post")
-    }
-    post.Likes.push(user._id);
-    await post.save({validateBeforeSave:false})
-    return res.status(200).json(
-        new ApiResponse(200,"","updated")
-    )
-})
-const GetAllPosts=asyncHandler(async(req,res)=>{
-    const posts=await Post.find({}).sort({createdAt:-1});
-    if(!posts){
-        throw new ApiError(500,"Server Error");
+        throw new ApiError("No Post Found")
     }
     return res.status(200).json(
-        new ApiResponse(200,posts,"Fetched All Posts")
+        new ApiResponse(200,post,"Retreived Post")
     )
 })
-const GetLikeCount=asyncHandler(async(req,res)=>{
-    const {postid}=req.body;
-    const post=await Post.findById(postid);
-    if(!post){
-        throw new ApiError(404,"Post not found")
+
+const DeletePost=asyncHandler(async(req,res)=>{
+    const {postid}=req.query
+    if(!postid){
+        throw new ApiError(400,"Post Id required")
     }
-    const likes=post.Likes.length;
+    await Post.findByIdAndDelete(postid)
     return res.status(200).json(
-        new ApiResponse(200,likes,"Likes Fetched")
+        new ApiResponse(200,[],"Deleted Post")
     )
 })
-//a unique 16 digit id will be generated for each user and to recover he need to provide the id
-const recoveraccount=asyncHandler(async(req,res)=>{
-    const {userid}=res.body;
+
+const getMyPosts=asyncHandler(async(req,res)=>{
+    const {userid}=req.user._id
     if(!userid){
-        throw new ApiError(400,"User id is required");
+        throw new ApiError(400,"UnAuthorized Access")
     }
-    const user=User.findOne({userid});
-    if(!user){
-        throw new ApiError(500,"No User Found!!");
-    }
-    const email=user.email
-    const newToken = jwt.sign(
-                {userid, 
-                   email},
-                process.env.JWT_SECRET,
-                );
-         res.cookie("hushToken",newToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "Strict"
-            });
+    const posts=Post.find({
+        author:userid
+    })
+    return res.status(200).json(
+        new ApiResponse(200,posts,"Retrieved My Posts")
+    )
 })
-export {CreatePost,
-        liked,
-        GetAllPosts,
-        GetLikeCount,
-        registerAccount,
-        recoveraccount
-        }
+
+export{
+    getAllPosts,
+    getMyPosts,
+    getPostById,
+    CreatePost,
+    DeletePost,
+    toggleReaction
+}
