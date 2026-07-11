@@ -15,7 +15,7 @@ const login=asyncHandler(async(req,res)=>{
     }
     const accessToken=user.generateAccessToken();
     const refreshToken=user.generateRefreshToken();
-    user.RefreshToken=refreshToken;
+    user.refreshToken=refreshToken;
     await user.save({validateBeforeSave:false})
     return res
     .cookie("accessToken",accessToken,{
