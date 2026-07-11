@@ -10,8 +10,10 @@ const userSchema=new Schema({
         required:true,
     },
     posts:{
-      type:[{type:Schema.Types.ObjectId,
-      ref:"Post"}],
+      type:[{
+      type:Schema.Types.ObjectId,
+      ref:"Post"
+      }],
       default:[]
     }
 },{timestamps:true})

@@ -3,10 +3,27 @@ import { model, Model, Schema } from "mongoose";
 const postSchema=new Schema({
     Title:{
         type:String,
-        required:true
+        required:true,
+        trim:true
     },
-    posttype:{
+    AnoName:{
+        type:"String"
+    },
+    Author:{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    },
+    Category:{
         type:String,
+        enum:[
+            "Programming",
+            "Career",
+            "College",
+            "Relationships",
+            "Confession",
+            "Random",
+        ],
+        default:"Random"
     },
     content:{
         type:String,
