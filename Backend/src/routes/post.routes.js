@@ -1,13 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
-import { CreatePost, GetAllPosts, GetLikeCount, liked, recoveraccount, registerAccount } from "../controllers/post.controller.js";
+import { CreatePost, DeletePost, getAllPosts, GetAllPosts, GetLikeCount, getMyPosts, getPostById, getReactions, liked, recoveraccount, registerAccount, toggleReaction } from "../controllers/post.controller.js";
 import {jwtverify} from "../middlewares/jwt.middleware.js"
 const router=Router();
 const formparser=multer().none();
-router.route("/like").post(formparser,jwtverify,liked)
-router.route("/likecount").post(formparser,jwtverify,GetLikeCount)
-router.route("/AllPosts").get(GetAllPosts)
+router.route("/toggleReaction").post(formparser,jwtverify,toggleReaction)
+router.route("/Reactions").get(formparser,jwtverify,getReactions)
+router.route("/AllPosts").get(getAllPosts)
 router.route("/CreatePost").post(formparser,jwtverify,CreatePost)
-router.route("/register").post(formparser,registerAccount)
-router.route("/recoverAccount").post(formparser,recoveraccount)
+router.route("/getMyPosts").get(formparser,jwtverify,getMyPosts)
+router.route("DeletePost").post(formparser,jwtverify,DeletePost)
+router.route("/getPost").get(formparser,jwtverify,getPostById)
 export default router

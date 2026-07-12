@@ -1,9 +1,9 @@
-import { Post } from "../models/post.model";
-import { Reaction } from "../models/reaction.model";
-import { User } from "../models/user.model";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/asyncHandler"
+import { Post } from "../models/post.model.js";
+import { Reaction } from "../models/reaction.model.js";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js"
 
 
 const CreatePost=asyncHandler(async(req,res)=>{
@@ -41,6 +41,38 @@ const CreatePost=asyncHandler(async(req,res)=>{
         new ApiResponse(200,[],"Post Created")
     )
 })
+const getReactions=asyncHandler(async(req,res)=>{
+    const {postid}=req.query;
+    let love=0,laugh=0,relate=0,hug=0,brave=0,mindblow=0;
+    const reactions=Reaction.find({postid});
+    for(reaction in reactions){
+        switch (reaction.type) {
+            case "love":
+                love++;
+                break;
+            case "laugh":
+                laugh++;
+                break;
+            case "relate":
+                relate++;
+                break;
+            case "hug":
+                hug++;
+                break;
+            case "brave":
+                brave++;
+                break;
+            case "mindblow":
+                mindblow++;
+                break;
+            default:
+                break;
+        }
+    }
+    return res.status(200).json(
+        new ApiResponse(200,[love,hug,relate,laugh,brave,mindblow],"Retrieved reactions successfully")
+    )
+})
 const toggleReaction=asyncHandler(async(req,res)=>{
     const {type}=req.body
     const {userid}=req.user._id
@@ -66,7 +98,7 @@ const getAllPosts=asyncHandler(async(req,res)=>{
 })
 
 const getPostById=asyncHandler(async(req,res)=>{
-    const postid=req.query
+    const {postid}=req.query
     if(!postid){
         throw new ApiError(400,"Post Id required")
     }
@@ -109,5 +141,5 @@ export{
     getPostById,
     CreatePost,
     DeletePost,
-    toggleReaction
-}
+    toggleReaction,
+    getReactions}
