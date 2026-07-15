@@ -4,13 +4,15 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { getAnoName } from "../utils/GetAnonomous.js";
 
 
 const CreatePost=asyncHandler(async(req,res)=>{
-    let {AnoName,Category,Title,content,expiry}=req.body;
+    let {isAno,Category,Title,content,expiry}=req.body;
     const {Author}=req.user._id
-    if(!AnoName){
-        AnoName=username
+    let AnoName=req.user.username
+    if(!isAno){
+        AnoName=getAnoName();
     }
     const expiresAt=new Date()
     if(expiry=="1h"){

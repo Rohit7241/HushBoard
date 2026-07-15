@@ -1,9 +1,10 @@
 import React from 'react'
 import NavBar from '../components/NavBar'
+import CreatePost from './CreatePost';
 import FloatingCard from '../components/FloatingCard';
 
-function Home() {
-    const posts = [
+function Profile() {
+const posts = [
   {
     title: "Midnight Thoughts",
     category: "Confession",
@@ -66,18 +67,27 @@ function Home() {
   }
 ];
   return (
-    <>
-    <div className='bg-black min-h-screen w-full'>
-        <NavBar/>
-    <div className='flex flex-col items-center pt-15 w-full'>
-        {posts.map((post) => (
-        <FloatingCard title={post.title} wd="2xl" category={post.category} content={post.content}/>
-    )
-    )}
+    <div className='min-h-screen w-full flex items-center flex-col bg-black'>
+      <NavBar/>
+    <div className=' mt-17 p-4 bg-linear-to-r from-indigo-500 via-sky-500 to-fuchsia-500 w-full flex items-center'>
+        <img src="profile.png" className="rounded-full  w-20 h-20
+            sm:w-20 sm:h-20
+            md:w-25 md:h-25
+            lg:w-30 lg:h-30
+            xl:w-40 xl:h-40
+            object-cover" alt="" />
+        <h1 className='ml-5 text-5xl font-bold'>@UserName</h1>
+    </div>
+     <h1 className='text-white text-4xl p-4'>Your Posts 💬</h1>
+    <div className='text-2xl flex justify-center w-full flex-wrap text-white'>
+        {posts.map((post)=>(
+            <div className='m-3'>
+                <FloatingCard title={post.title} wd="xl" category={post.category} content={post.content} />
+            </div>
+        ))}
     </div>
     </div>
-    </>
   )
 }
 
-export default Home
+export default Profile

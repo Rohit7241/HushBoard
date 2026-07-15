@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Whisper from './Whisper'
 
-function FloatingCard({title,category,content}) {
+function FloatingCard({title,category,content,wd}) {
   const [isopen,setisopen]=useState(false);
   const openWhispers=()=>{
     setisopen(!isopen);
@@ -79,15 +79,15 @@ function FloatingCard({title,category,content}) {
      }
   }
   return (
-    <div className='w-full max-w-2xl relative transition-all duration-300
-hover:-translate-y-1'>
-    <div className='w-full max-w-2xl mt-5
+    <div className={`w-full max-w-xl relative transition-all duration-300
+`}>
+    <div className={`w-full max-w-xl mt-5 p-4
 bg-slate-900 backdrop-blur-md border-5
 border border-violet-400/40
 text-sky-200
 rounded-xl
 shadow-[0_10px_35px_rgba(168,85,247,0.18)]
-'>
+`}>
         <div className='flex justify-between p-2'>
            <h1 className='text-base'>Filthy-Fox-#3030</h1>
            <h1 className='text-xs'>10:00am</h1>
@@ -106,16 +106,41 @@ shadow-[0_10px_35px_rgba(168,85,247,0.18)]
            <button className='p-2 bg-blue-800 rounded-xl cursor-pointer' onClick={handleSalute}>🫡{SCnt}</button>
         </div>
         <div>
-          <button className='bg-white m-2 p-2 rounded-lg text-slate-900 cursor-pointer' onClick={openWhispers}>{!isopen?"Whispers(10)":"Close"}</button>
+          <button
+  onClick={openWhispers}
+  className="
+    text-lg
+    flex items-center 
+    p-2 mt-2
+    rounded-full
+    bg-violet-600
+    text-white
+    font-semibold
+    transition-all duration-300
+    shadow-lg shadow-violet-600/30
+    cursor-pointer
+  "
+>
+    💭 {isopen ? "Close" : `Whispers (${10})`}
+</button>
         </div>
     </div>
-<div className={`
+{isopen&&<div className="
+absolute
+left-8
+top-full
+mt-3
+w-[320px]
+max-h-96
 overflow-y-auto
-transition-all duration-700 ml-5 ease-in-out 
-${isopen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}
-`}>
-       <div className='text-white font-bold '>
-         <div className='m-1 sticky top-0 z-0 bg-violet-500 p-2 rounded-lg w-fit '>💭Whispers</div>
+rounded-2xl
+bg-slate-900
+border border-violet-500/30
+shadow-2xl
+z-50 max-w-lg w-full px-10
+">
+       <div className='text-white font-bold relative '>
+         <div className='m-1 sticky top-0 z-0 bg-violet-600 p-2 rounded-full px-15 text-xl w-fit '>💭Whispers</div>
          <div className=''>
           <Whisper/>
          <Whisper/>
@@ -128,7 +153,7 @@ ${isopen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}
          <Whisper/>
          </div>
         </div>
-    </div>
+    </div>}
     </div>
   )
 }

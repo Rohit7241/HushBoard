@@ -16,10 +16,9 @@ const postSchema=new Schema({
     Category:{
         type:String,
         enum:[
-            "Programming",
             "Career",
             "College",
-            "Relationships",
+            "Advice",
             "Confession",
             "Random",
         ],
