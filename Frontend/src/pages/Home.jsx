@@ -68,7 +68,7 @@ function Home() {
   return (
     <>
     <div className='bg-black min-h-screen w-full'>
-        <NavBar/>
+        <NavBar underline="Home"/>
     <div className='flex flex-col items-center pt-15 w-full'>
         {posts.map((post) => (
         <FloatingCard title={post.title} wd="2xl" category={post.category} content={post.content}/>

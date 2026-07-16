@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { CreatePost, DeletePost, getAllPosts, GetAllPosts, GetLikeCount, getMyPosts, getPostById, getReactions, liked, recoveraccount, registerAccount, toggleReaction } from "../controllers/post.controller.js";
+import { CreatePost, DeletePost, getAllPosts, getMyPosts, getPostById, getReactions, toggleReaction } from "../controllers/post.controller.js";
 import {jwtverify} from "../middlewares/jwt.middleware.js"
 const router=Router();
 const formparser=multer().none();

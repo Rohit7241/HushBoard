@@ -1,6 +1,6 @@
 import {model,Schema} from "mongoose"
 
-const reactionScheme=new Scheme({
+const reactionScheme=new Schema({
     userid:{
         type:Schema.Types.ObjectId,
         ref:"User"

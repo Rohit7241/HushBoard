@@ -4,8 +4,8 @@ import NavBar from '../components/NavBar'
 function CreatePost() {
   return (
     <div className='bg-black min-h-screen flex justify-center w-full'>
-      <NavBar/>
-      <div className="w-1/3 bg-sky-300 m-4 p-4 rounded-xl mt-20">
+      <NavBar underline="Create"/>
+      <div className="w-full max-w-xl bg-sky-300 m-4 p-4 rounded-xl mt-20">
         <h1 className='text-2xl w-full'>Create Post</h1>
       <form className="w-full" action="">
         <h1 >Title:</h1>

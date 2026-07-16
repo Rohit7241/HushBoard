@@ -98,7 +98,6 @@ const getAllPosts=asyncHandler(async(req,res)=>{
         new ApiResponse(200,posts,"Got All posts")
     )
 })
-
 const getPostById=asyncHandler(async(req,res)=>{
     const {postid}=req.query
     if(!postid){
@@ -112,7 +111,6 @@ const getPostById=asyncHandler(async(req,res)=>{
         new ApiResponse(200,post,"Retreived Post")
     )
 })
-
 const DeletePost=asyncHandler(async(req,res)=>{
     const {postid}=req.query
     if(!postid){
@@ -123,7 +121,6 @@ const DeletePost=asyncHandler(async(req,res)=>{
         new ApiResponse(200,[],"Deleted Post")
     )
 })
-
 const getMyPosts=asyncHandler(async(req,res)=>{
     const {userid}=req.user._id
     if(!userid){

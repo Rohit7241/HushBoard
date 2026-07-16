@@ -68,7 +68,7 @@ const posts = [
 ];
   return (
     <div className='min-h-screen w-full flex items-center flex-col bg-black'>
-      <NavBar/>
+      <NavBar underline="Profile"/>
     <div className=' mt-17 p-4 bg-linear-to-r from-indigo-500 via-sky-500 to-fuchsia-500 w-full flex items-center'>
         <img src="profile.png" className="rounded-full  w-20 h-20
             sm:w-20 sm:h-20
