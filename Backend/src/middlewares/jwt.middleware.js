@@ -10,14 +10,13 @@ const jwtverify=asyncHandler(async(req,res,next)=>{
     else{
         try {
             const decoded=jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);
-            const user=await User.findOneById(decoded._id)
+            const user=await User.findById(decoded._id)
             .select("-password -refreshToken");
             if(!user){
                 throw new ApiError(404,"User not found")
             }
             req.user=user;
         } catch (error) {
-             res.clearCookie("accessToken")
              throw new ApiError(400,"Incorrect accessToken")
         }
     }

@@ -33,7 +33,7 @@ const CreatePost=asyncHandler(async(req,res)=>{
     else{
         expiresAt.setDate(expiresAt.getDate()+1);
     }
-    const post=await Post({
+    const post=await Post.create({
         Title,AnoName,Author,Category,content,expiresAt
     })
     if(!post){
