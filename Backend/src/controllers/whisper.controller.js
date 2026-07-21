@@ -1,21 +1,22 @@
 import { Post } from "../models/post.model.js";
 import { Whisper } from "../models/whisper.js";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/asyncHandler";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const Createwhisper=asyncHandler(async(req,res)=>{
     const {content}=req.body
     const postid=req.query
-    if(!postid){
+    if(!postid.postid){
         throw new ApiError(400,"Post id required")        
     }
-    const post=await Post.findById(postid)
+    // console.log(postid.postid)
+    const post=await Post.findById(postid.postid)
     if(!postid){
         throw new ApiError(500,"Error Retreiving Post")
     }
     const whisper=await Whisper.create({
-        post:postid,
+        post:postid.postid,
         content
     })
     if(!whisper){

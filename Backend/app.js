@@ -22,6 +22,8 @@ app.use(cookieParser())
 //routes
 import postrouter from "./src/routes/post.routes.js"
 import userrouter from "./src/routes/user.routes.js"
+import whisperrouter from "./src/routes/whisper.routes.js"
 app.use("/api/v1/posts",postrouter)
 app.use("/api/v1/user",userrouter)
+app.use("/api/v1/whisper",whisperrouter)
 export {app}

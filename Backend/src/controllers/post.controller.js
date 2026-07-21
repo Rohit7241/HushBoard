@@ -11,7 +11,7 @@ const CreatePost=asyncHandler(async(req,res)=>{
     let {isAno,Category,Title,content,expiry}=req.body;
     const {Author}=req.user._id
     let AnoName=req.user.username
-    if(!isAno){
+    if(isAno){
         AnoName=getAnoName();
     }
     const expiresAt=new Date()

@@ -1,6 +1,7 @@
 import React from 'react'
 
-function Whisper() {
+function Whisper({content}) {
+  console.log(content)
   return (
     <div className="
     mb-3
@@ -13,7 +14,7 @@ function Whisper() {
     border-violet-500/20
 ">
     <p className="text-sm text-slate-200">
-        Woo... so sad
+      {content}
     </p>
 </div>
   )

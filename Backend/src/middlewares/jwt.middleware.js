@@ -9,6 +9,7 @@ const jwtverify=asyncHandler(async(req,res,next)=>{
     }
     else{
         try {
+            // console.log(token)
             const decoded=jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);
             const user=await User.findById(decoded._id)
             .select("-password -refreshToken");
@@ -17,6 +18,7 @@ const jwtverify=asyncHandler(async(req,res,next)=>{
             }
             req.user=user;
         } catch (error) {
+            console.log(error)
              throw new ApiError(400,"Incorrect accessToken")
         }
     }

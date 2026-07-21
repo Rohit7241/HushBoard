@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import NavBar from '../components/NavBar'
 import FloatingCard from '../components/FloatingCard';
 import { useEffect } from 'react';
 import { getAllPosts } from '../apis/PostApi';
 
 function Home() {
-  let posts=[]
+  const [posts,setposts]=useState([])
    useEffect(()=>{
      const fetch=async()=>{ const response=await getAllPosts();
-      console.log(response) }
+    setposts(response.data.data)
+    console.log(response.data.data)
+    }
       fetch()
    },[])
   return (
@@ -17,7 +19,7 @@ function Home() {
         <NavBar underline="Home"/>
     <div className='flex flex-col items-center pt-15 w-full'>
         {posts.map((post) => (
-        <FloatingCard title={post.title} wd="2xl" category={post.category} content={post.content}/>
+         <FloatingCard title={post.Title} wd="2xl" category={post.Category} content={post.content} anoname={post.AnoName} time={post.createdAt} postid={post._id}/>
     )
     )}
     </div>

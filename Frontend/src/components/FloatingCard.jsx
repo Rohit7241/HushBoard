@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import Whisper from './Whisper'
+import React, { useEffect, useState } from 'react'
+import Whisper from './Whisper.jsx'
+import { CreateWhisper, GetWhispers } from '../apis/whisperApi';
 
-function FloatingCard({title,category,content,wd}) {
+function FloatingCard({title,category,content,wd,anoname,time,postid}) {
   const [isopen,setisopen]=useState(false);
-  const openWhispers=()=>{
-    setisopen(!isopen);
-  }
+  const [whispers,setwhispers]=useState([])
+  const [nowhispers,setnow]=useState(0)
   const[Like,setLike]=useState(false);
   const[Hug,setHug]=useState(false);
   const[Laugh,setLaugh]=useState(false);
@@ -18,6 +18,24 @@ function FloatingCard({title,category,content,wd}) {
   const [MBCnt,setMB]=useState(0);
   const [HSCnt,setHS]=useState(0);
   const [SCnt,setSC]=useState(0);
+  const [hours,sethours]=useState((Date.now()-Date.parse(time))/60000);
+  const [whis,setwhis]=useState("")
+  const handlewhisp=async()=>{
+    const response=await CreateWhisper({content:whis},postid)
+    console.log(response)
+    getWhishpers()
+    setwhis("")
+  }
+  const getWhishpers=async()=>{
+      const response=await GetWhispers(postid)
+      setwhispers(response.data.data)
+      setnow(response.data.data.length)
+   }
+   const openWhispers=()=>{
+    setisopen(!isopen);
+    console.log(whispers)
+    getWhishpers()
+  }
   const handleLike=()=>{
      if(Like){
       setLike(false);
@@ -89,8 +107,8 @@ rounded-xl
 shadow-[0_10px_35px_rgba(168,85,247,0.18)]
 `}>
         <div className='flex justify-between p-2'>
-           <h1 className='text-base'>Filthy-Fox-#3030</h1>
-           <h1 className='text-xs'>10:00am</h1>
+           <h1 className='text-base'>{anoname}</h1>
+           <h1 className='text-xs'>{(hours/60)<1?`${Math.round(hours)} minutes ago`:`${Math.round(hours/60)} hours ago`}</h1>
         </div>
         <div className='p-2'>
             <h1 className='text-xl text-fuchsia-400'>{title}</h1>
@@ -121,7 +139,7 @@ shadow-[0_10px_35px_rgba(168,85,247,0.18)]
     cursor-pointer
   "
 >
-    💭 {isopen ? "Close" : `Whispers (${10})`}
+    💭 {isopen ? "Close" : `Whispers`}
 </button>
         </div>
     </div>
@@ -137,20 +155,19 @@ rounded-2xl
 bg-slate-900
 border border-violet-500/30
 shadow-2xl
-z-50 max-w-lg w-full px-10
+ max-w-lg w-full px-10
+relative
 ">
-       <div className='text-white font-bold relative '>
-         <div className='m-1 sticky top-0 z-0 bg-violet-600 p-2 rounded-full px-15 text-xl w-fit '>💭Whispers</div>
+       <div className='text-white font-bold relative'>
+         <div className='m-1 sticky top-0 z-0 bg-violet-600 p-2 rounded-full px-15 text-xl w-fit '>{`💭Whispers(${nowhispers})`}</div>
          <div className=''>
-          <Whisper/>
-         <Whisper/>
-         <Whisper/>
-         <Whisper/>
-         <Whisper/>
-         <Whisper/>
-         <Whisper/>
-         <Whisper/>
-         <Whisper/>
+          {whispers.map((w)=>(
+            <Whisper content={w.content}/>
+          ))}
+         </div>
+         <div className='sticky bottom-0 left-0 right-0 flex'>
+            <input type="text" className="h-full w-full p-4 mb-2 bg-violet-500 rounded-lg" value={whis} onChange={(e)=>{setwhis(e.target.value)}} placeholder='Create a Whisper..'/>
+            <button onClick={handlewhisp} className='bg-violet-900 p-4 rounded-lg h-full w-1/5 cursor-pointer'>Post</button>
          </div>
         </div>
     </div>}
